@@ -37,7 +37,6 @@ export interface CardDef {
   discount: boolean
   rule: Rule
   scoringText: string
-  needsCheck?: string
 }
 
 export type Cell = { cardId: string } | { faceDown: true } | null

@@ -3,6 +3,7 @@ import { CardPicker } from './CardPicker'
 import { CARD_BY_ID } from './game/cards'
 import { scoreBoard } from './game/score'
 import type { Board, Cell } from './game/types'
+import { describeRule } from './describe'
 import { cardName, TEXT, type Lang } from './i18n'
 import { Shields } from './Shields'
 
@@ -162,8 +163,8 @@ function GridCell({ cell, lang, points, stored, onClick }: { cell: Cell; lang: L
 
   const card = CARD_BY_ID.get(cell.cardId)!
   return (
-    <button className={`cell ${card.banner}`} onClick={onClick} title={card.scoringText}>
-      <span className="cell-name">{cardName(card, lang)}{card.needsCheck && ' ⚠'}</span>
+    <button className={`cell ${card.banner}`} onClick={onClick} title={describeRule(card.rule, lang)}>
+      <span className="cell-name">{cardName(card, lang)}</span>
       <Shields shields={card.shields} lang={lang} />
       {stored > 0 && <span className="stored">🪙 {stored} {t.stored}</span>}
       <span className="points">{points}</span>

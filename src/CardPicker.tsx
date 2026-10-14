@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CARDS } from './game/cards'
 import type { Banner, CardDef, Cell } from './game/types'
+import { describeRule } from './describe'
 import { cardName, fold, TEXT, type Lang } from './i18n'
 import { Shields } from './Shields'
 
@@ -62,9 +63,8 @@ function CardRow({ card, lang, used, onClick }: { card: CardDef; lang: Lang; use
           <span className="card-row-name">
             {cardName(card, lang)}
             {other && other !== cardName(card, lang) && <small> · {other}</small>}
-            {card.needsCheck && <span title={TEXT[lang].needsCheck}> ⚠</span>}
           </span>
-          <span className="card-row-text">{card.scoringText}</span>
+          <span className="card-row-text">{describeRule(card.rule, lang)}</span>
         </span>
         <Shields shields={card.shields} lang={lang} />
       </button>

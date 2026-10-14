@@ -23,7 +23,7 @@ const rules = {
   'lookout': distinct('column', 4),
   'knight': sh('blue', 'cross', 3),
   'general': { k: 'perMatchingTriple', pts: 6 },
-  'chaplain-red': pos('RIGHT', 8),
+  'captain': pos('RIGHT', 8),
   'officer': set(['blue', 'red'], 4),
   'mercenary': set(['purple', 'red', 'yellow'], 7),
   'master-at-arms': purse(4),
@@ -63,8 +63,8 @@ const rules = {
   'his-holiness': { k: 'perMissingType', pts: 6 },
   'cardinal': sh('purple', 'row', 3),
   'templar': { k: 'perKey', pts: 1 },
-  'pilgrim': card(banner('village'), 4, 'row'),
-  'chaplain-purple': card(banner('village'), 2),
+  'pilgrim': distinct('row', 4),
+  'chaplain': card(banner('village'), 2),
   'gravedigger': purse(8),
   'scribe': sh('green', 'cross', 3),
   'mother-superior': pos('TOP', 5),
@@ -100,13 +100,6 @@ const rules = {
   'beekeeper': purse(9),
 }
 
-const needsCheck = {
-  'chaplain-red': 'Source text is garbled ("8 points if located in the right column is full"); the English name duplicates the purple Chaplain.',
-  'chaplain-purple': 'English name duplicates the red Chaplain.',
-  'pilgrim': 'Source says "brown shield", which does not exist; read as village banner in the same row.',
-  'patron': 'Source says "per purse costing 5+", but no purse costs 5+; read as per card costing 5+.',
-}
-
 const out = research.map(r => {
   const rule = rules[r.id]
   if (!rule) throw new Error(`no rule for ${r.id}`)
@@ -122,7 +115,6 @@ const out = research.map(r => {
     discount: r.otherIcons.some(i => i.startsWith('discount:')),
     rule,
     scoringText: r.scoringText,
-    ...(needsCheck[r.id] ? { needsCheck: needsCheck[r.id] } : {}),
   }
   return '  ' + JSON.stringify(def)
 })

@@ -25,7 +25,6 @@ export const TEXT = {
     newGame: 'Nová hra',
     newGameConfirm: 'Smazat všechny hráče a karty?',
     keysRow: 'Zbylé klíče',
-    needsCheck: 'Text karty ověř na skutečné kartě',
     emptyCell: 'Vyber kartu',
   },
   en: {
@@ -50,7 +49,6 @@ export const TEXT = {
     newGame: 'New game',
     newGameConfirm: 'Delete all players and cards?',
     keysRow: 'Leftover keys',
-    needsCheck: 'Check this text against the real card',
     emptyCell: 'Pick a card',
   },
 } satisfies Record<Lang, Record<string, string>>
