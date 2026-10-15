@@ -23,15 +23,23 @@ function saveReferences(): Plugin {
 }
 
 export default defineConfig({
+  base: process.env.BASE_PATH ?? '/',
   server: { host: true },
   plugins: [
     react(),
     saveReferences(),
     VitePWA({
       registerType: 'autoUpdate',
+      pwaAssets: {
+        config: true,
+        overrideManifestIcons: true,
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+      },
       manifest: {
-        name: 'Castle Combo – počítání bodů',
-        short_name: 'Castle Combo',
+        name: 'Hradní devatero – počítání bodů',
+        short_name: 'Hradní devatero',
         lang: 'cs',
         display: 'standalone',
         orientation: 'portrait',
