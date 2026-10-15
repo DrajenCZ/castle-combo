@@ -3,7 +3,13 @@
 Personal side project, unrelated to any work repo. Everything for it lives in this folder.
 
 - Offline PWA (Vite + React + TS) that scores Castle Combo; Czech edition *Hradní devatero* (MINDOK).
-- No per-request AI: photo recognition (v2) must run on the device (Tesseract.js OCR + fuzzy match, ORB fallback).
+- No per-request AI: photo recognition runs on the device (`src/vision/`: manual grid corners → homography →
+  find each card's edges in its cell → fingerprint → nearest of the 78 card + 2 back fingerprints in
+  `src/vision/references.json`). `test_*.jpg` photos are real games used only for evaluation, never as references.
+- After any change to `src/vision/recognize.ts`: rebuild + save the fingerprints and run `refBuilder.evaluate(0|20|40|60, refs)`
+  on `/?refs`; every photo must stay fully correct.
+- Rebuild fingerprints: dev server → `/?refs` (corners per photo live in `ReferenceBuilder.tsx`; check the
+  contact sheet) → `fetch('/__save-references', { method: 'POST', body: JSON.stringify(refBuilder.build()) })`.
 - Plan: `docs/design.md`. Card research: `research/` (fan list from listium.com, checked against the rulebook's shield table).
 - Card data `src/game/cards.ts` is generated: `node tools/gen-cards.mjs research/cards.json src/game/cards.ts`.
   Scoring rules per card are written by hand in the generator.

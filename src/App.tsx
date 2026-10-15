@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { CardPicker } from './CardPicker'
 import { CARD_BY_ID } from './game/cards'
 import { scoreBoard } from './game/score'
@@ -19,6 +19,8 @@ interface State {
   active: number
 }
 
+const PhotoMode = lazy(() => import('./PhotoMode'))
+
 const STORAGE_KEY = 'castle-combo-v1'
 
 const emptyBoard = (): Board => ({ grid: Array(9).fill(null), keys: 0, coins: 0 })
@@ -37,6 +39,7 @@ function loadState(): State {
 export default function App() {
   const [state, setState] = useState<State>(loadState)
   const [pickerCell, setPickerCell] = useState<number | null>(null)
+  const [photoOpen, setPhotoOpen] = useState(false)
   const { lang, players, active } = state
   const t = TEXT[lang]
   const player = players.find(p => p.id === active) ?? players[0]
@@ -114,6 +117,7 @@ export default function App() {
       <section className="board-head">
         <input className="player-name" value={player.name} onChange={e =>
           setState(s => ({ ...s, players: s.players.map(p => (p.id === player.id ? { ...p, name: e.target.value } : p)) }))} />
+        <button className="small" onClick={() => setPhotoOpen(true)}>📷 {t.fromPhoto}</button>
         {players.length > 1 && <button className="ghost small" onClick={removePlayer}>{t.remove}</button>}
       </section>
 
@@ -147,6 +151,20 @@ export default function App() {
             ))}
           </ol>
         </section>
+      )}
+
+      {photoOpen && (
+        <Suspense>
+          <PhotoMode
+            lang={lang}
+            usedIds={usedIds}
+            onApply={grid => {
+              updateBoard({ grid })
+              setPhotoOpen(false)
+            }}
+            onClose={() => setPhotoOpen(false)}
+          />
+        </Suspense>
       )}
 
       {pickerCell !== null && (

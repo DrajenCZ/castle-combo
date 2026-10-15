@@ -131,3 +131,38 @@ button.small { padding: 4px 8px; font-size: 0.85rem; }
 .card-row-name { font-weight: 600; }
 .card-row-name small { font-weight: 400; color: var(--muted); }
 .card-row-text { font-size: 0.8rem; color: var(--muted); }
+
+.corner-editor { position: relative; width: 100%; touch-action: none; user-select: none; }
+.corner-editor img { display: block; width: 100%; }
+.corner-editor svg { position: absolute; left: 0; top: 0; pointer-events: none; }
+.corner-editor polyline { fill: none; stroke: #ffd400; stroke-width: 2; filter: drop-shadow(0 0 1px #000); }
+.handle {
+  position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%;
+  border: 3px solid #ffd400; background: rgba(0, 0, 0, 0.25); cursor: grab; touch-action: none;
+}
+
+.contact-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; margin-top: 8px; }
+.contact-sheet figure { margin: 0; }
+.contact-sheet img { width: 100%; display: block; }
+.contact-sheet figcaption { font-size: 0.65rem; overflow-wrap: anywhere; }
+
+.photo-overlay { align-items: stretch; }
+.photo-mode { width: 100%; max-width: 560px; margin: 0 auto; background: var(--bg); padding: 12px 16px; overflow-y: auto; }
+.photo-mode h2 { flex: 1; margin: 0; align-self: center; }
+.photo-start { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.photo-start p, .photo-help { color: var(--muted); font-size: 0.9rem; }
+.file-button {
+  display: block; text-align: center; padding: 14px; border-radius: 10px; cursor: pointer;
+  background: var(--accent); color: #fff; font-weight: 600;
+}
+.file-button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; flex: 1; }
+.photo-mode .picker-actions { margin-top: 12px; }
+.review-cell { padding: 4px; justify-content: flex-start; gap: 4px; }
+.review-cell img { width: 100%; border-radius: 6px; }
+.review-cell .cell-name { font-size: 0.8rem; }
+.review-cell.unsure { outline: 3px solid #ef8a1c; }
+.badge {
+  position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%;
+  background: #ef8a1c; color: #fff; font-weight: 700; display: grid; place-items: center;
+}

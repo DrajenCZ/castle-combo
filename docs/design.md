@@ -112,36 +112,60 @@ fit into one of them, with `custom` only as a last resort.
 - **Result screen** – table of players × total, tap a player to see points per card.
 - State is kept in `localStorage`, so a reload during scoring loses nothing.
 
-## Photo mode (v2) – recognition plan
+## Photo mode (v2) – recognition
 
-Everything runs on the device:
+Everything runs on the device, with no libraries: plain TypeScript in `src/vision/`.
 
 1. Get the image from the camera (`<input type="file" capture>`) or a file upload.
-2. Find the grid: OpenCV.js finds the card outlines and straightens the photo, then
-   cuts it into 9 cells. Fallback: the player drags 4 corners by hand.
-3. Recognise each cell:
-   - **Primary:** OCR of the card name strip with Tesseract.js (`ces` + `eng`),
-     then fuzzy-match (Levenshtein) against the known card names in both
-     languages.
-   - **Fallback:** ORB feature matching against one reference image per card.
-     This needs a reference scan of each card (taken by the user, not shipped
-     publicly).
-4. Show the filled grid with a confidence for each cell; anything below a set
-   threshold is highlighted for the player to check.
+2. The player drags 4 handles onto the corners of the 3×3 card grid. A perspective
+   mapping (homography) straightens the grid and splits it into 9 cells.
+3. **Find the card in each cell.** Cards never sit exactly on a grid, so each cell is
+   searched (20 % beyond its borders) for the card's own edges. A card's border is
+   lighter than the table, so the direction of the brightness step tells our card's
+   edge apart from the neighbour's. The best few candidates per edge are combined,
+   and only rectangles with real card proportions (63 × 88 mm, ±5 %) are kept.
+4. The card (inset 6 %) becomes a **fingerprint**: a 12×16 grid of brightness
+   (normalised, so the light level doesn't matter) plus two colour channels.
+   It is compared with the fingerprint of every card and of both card backs, at
+   27 small shifts and sizes. Confidence = how much better the best match is than the
+   second best.
+5. A card can be in the grid only once: the surer cell keeps the card and the other
+   moves to its next match. Card backs may repeat; they become face-down cells.
+6. The review screen shows each cut-out with the recognised card; uncertain cells are
+   marked **?**. Tapping a cell opens the card picker. "Použít" puts the grid on the board.
 
-Face-down cards are recognised by their card back. Coins and keys are always
-entered by hand.
+**Reference fingerprints** (`src/vision/references.json`) are built from photos of every card
+and both backs (`research/photos/`, git-ignored) on the developer page `/?refs` (dev server only).
+That page stores the grid corners of each photo, shows a contact sheet of the detected cards,
+saves the fingerprints through a dev-only endpoint, and evaluates recognition
+(`refBuilder.evaluate(jitter, refs)`) on all photos, including two photos of real games
+marked `test: true`, which are never used as references. Fingerprints are tiny averages,
+not the artwork.
+
+Why not OCR: the card names are small, vertical and in a decorative font, and the
+user photographed all 78 cards, so matching the whole card is both easier and stronger.
+
+**Measured** (2026-10-15), all 98 cells of the 12 photos, corners placed exactly or moved at random
+by up to 20, 40 and 60 px (about a sixth of a card): every cell correct at every level, at most
+2 cells marked uncertain. The two real-game photos (one with two face-down cards): 9/9 each,
+none uncertain. About 0.06 s per photo.
+Before card detection the real-game photos got only 8/9 with many uncertain cells: cutting
+the plain grid doesn't line up with where the cards actually lie.
+
+Tried and dropped: per-cell white balance (it swapped the two card backs).
+
+**Not done yet:** automatic corner detection; more real-game photos (other tables, light).
 
 ## Stack
 
 Vite + React + TypeScript, `vite-plugin-pwa` for offline/installable,
-Vitest for the engine. Tesseract.js and OpenCV.js are loaded only when the
-player opens photo mode, so the manual mode stays small.
+Vitest for the engine and the vision maths. Photo mode is loaded only when the
+player opens it, so the manual mode stays small.
 
 ## Milestones
 
-1. Card data researched and verified (EN + CS).
-2. Scoring engine + tests against the rulebook example.
-3. Manual grid UI, multiple players, result table.
-4. PWA install + offline.
-5. Photo mode: grid detection → OCR → fuzzy match → review screen.
+1. Card data researched and verified (EN + CS). ✔
+2. Scoring engine + tests against the rulebook example. ✔
+3. Manual grid UI, multiple players, result table. ✔
+4. Photo mode: corners → card detection → fingerprints → review screen, face-down cards. ✔
+5. PWA install + offline (needs HTTPS hosting).
