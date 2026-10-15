@@ -215,11 +215,24 @@ function GridCell({ cell, lang, points, stored, onClick }: { cell: Cell; lang: L
 }
 
 function Counter({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  const [draft, setDraft] = useState<string | null>(null)
   return (
     <label className="counter">
       <span>{label}</span>
       <button onClick={() => onChange(Math.max(0, value - 1))}>−</button>
-      <input type="number" inputMode="numeric" min={0} value={value} onChange={e => onChange(Math.max(0, Number(e.target.value) || 0))} />
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={draft ?? String(value)}
+        onFocus={e => e.target.select()}
+        onChange={e => {
+          const digits = e.target.value.replace(/\D/g, '')
+          setDraft(digits)
+          onChange(Number(digits) || 0)
+        }}
+        onBlur={() => setDraft(null)}
+      />
       <button onClick={() => onChange(value + 1)}>+</button>
     </label>
   )
