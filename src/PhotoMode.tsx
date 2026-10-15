@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CardPicker } from './CardPicker'
+import { useBackToClose } from './useBackToClose'
 import { CARD_BY_ID } from './game/cards'
 import type { Cell } from './game/types'
 import { cardName, TEXT, type Lang } from './i18n'
@@ -33,6 +34,7 @@ export default function PhotoMode({ lang, usedIds, onApply, onClose }: Props) {
   const [quad, setQuad] = useState<Quad | null>(null)
   const [review, setReview] = useState<Review | null>(null)
   const [pickerCell, setPickerCell] = useState<number | null>(null)
+  useBackToClose(review !== null && pickerCell !== null, () => setPickerCell(null))
   const [busy, setBusy] = useState(false)
 
   const load = async (file: File | undefined) => {

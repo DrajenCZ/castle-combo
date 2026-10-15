@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { CardPicker } from './CardPicker'
+import { useBackToClose } from './useBackToClose'
 import { CARD_BY_ID } from './game/cards'
 import { scoreBoard } from './game/score'
 import type { Board, Cell } from './game/types'
@@ -41,6 +42,9 @@ export default function App() {
   const [pickerCell, setPickerCell] = useState<number | null>(null)
   const [photoOpen, setPhotoOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  useBackToClose(pickerCell !== null, () => setPickerCell(null))
+  useBackToClose(photoOpen, () => setPhotoOpen(false))
+  useBackToClose(menuOpen, () => setMenuOpen(false))
   const { lang, players, active } = state
   const t = TEXT[lang]
   const player = players.find(p => p.id === active) ?? players[0]
@@ -201,15 +205,26 @@ export default function App() {
 function GridCell({ cell, lang, points, stored, onClick }: { cell: Cell; lang: Lang; points: number; stored: number; onClick: () => void }) {
   const t = TEXT[lang]
   if (!cell) return <button className="cell empty" onClick={onClick}>+<small>{t.emptyCell}</small></button>
-  if ('faceDown' in cell) return <button className="cell face-down" onClick={onClick}>{t.faceDown}<span className="points">0</span></button>
+  if ('faceDown' in cell) {
+    return (
+      <button className="cell face-down" onClick={onClick}>
+        <span className="cell-top"><span className="cell-name">{t.faceDown}</span></span>
+        <span className="cell-bottom"><span className="points">0</span></span>
+      </button>
+    )
+  }
 
   const card = CARD_BY_ID.get(cell.cardId)!
   return (
     <button className={`cell ${card.banner}`} onClick={onClick} title={describeRule(card.rule, lang)}>
-      <span className="cell-name">{cardName(card, lang)}</span>
-      <Shields shields={card.shields} lang={lang} />
-      {stored > 0 && <span className="stored">🪙 {stored} {t.stored}</span>}
-      <span className="points">{points}</span>
+      <span className="cell-top">
+        <span className="cell-name">{cardName(card, lang)}</span>
+        <Shields shields={card.shields} lang={lang} />
+      </span>
+      <span className="cell-bottom">
+        {stored > 0 && <span className="stored" title={`${stored} ${t.stored}`}>🪙 {stored}</span>}
+        <span className="points">{points}</span>
+      </span>
     </button>
   )
 }
