@@ -40,6 +40,7 @@ export default function App() {
   const [state, setState] = useState<State>(loadState)
   const [pickerCell, setPickerCell] = useState<number | null>(null)
   const [photoOpen, setPhotoOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { lang, players, active } = state
   const t = TEXT[lang]
   const player = players.find(p => p.id === active) ?? players[0]
@@ -66,10 +67,15 @@ export default function App() {
   const addPlayer = () => {
     const id = Math.max(...players.map(p => p.id)) + 1
     setState(s => ({ ...s, players: [...s.players, newPlayer(id, lang)], active: id }))
+    setMenuOpen(true)
   }
 
+  const renamePlayer = (name: string) =>
+    setState(s => ({ ...s, players: s.players.map(p => (p.id === player.id ? { ...p, name } : p)) }))
+
   const removePlayer = () => {
-    if (players.length === 1) return
+    if (players.length === 1 || !confirm(t.removeConfirm.replace('{name}', player.name))) return
+    setMenuOpen(false)
     setState(s => {
       const rest = s.players.filter(p => p.id !== player.id)
       return { ...s, players: rest, active: rest[0].id }
@@ -106,20 +112,22 @@ export default function App() {
       </header>
 
       <nav className="players">
-        {players.map(p => (
-          <button key={p.id} className={p.id === player.id ? 'tab active' : 'tab'} onClick={() => setState(s => ({ ...s, active: p.id }))}>
+        {players.map(p => (p.id === player.id ? (
+          <span key={p.id} className="tab-split">
+            <button className="tab active" onClick={() => setMenuOpen(true)}>
+              {p.name} <b>{scores.get(p.id)!.total}</b>
+            </button>
+            <button className="tab active menu" aria-label={t.editPlayer} onClick={() => setMenuOpen(true)}>⋯</button>
+          </span>
+        ) : (
+          <button key={p.id} className="tab" onClick={() => setState(s => ({ ...s, active: p.id }))}>
             {p.name} <b>{scores.get(p.id)!.total}</b>
           </button>
-        ))}
+        )))}
         {players.length < 5 && <button className="tab add" onClick={addPlayer}>+ {t.addPlayer}</button>}
       </nav>
 
-      <section className="board-head">
-        <input className="player-name" value={player.name} onChange={e =>
-          setState(s => ({ ...s, players: s.players.map(p => (p.id === player.id ? { ...p, name: e.target.value } : p)) }))} />
-        <button className="small" onClick={() => setPhotoOpen(true)}>📷 {t.fromPhoto}</button>
-        {players.length > 1 && <button className="ghost small" onClick={removePlayer}>{t.remove}</button>}
-      </section>
+      <button className="photo-button" onClick={() => setPhotoOpen(true)}>📷 {t.photoTitle}</button>
 
       <section className="grid">
         {player.board.grid.map((cell, index) => (
@@ -151,6 +159,22 @@ export default function App() {
             ))}
           </ol>
         </section>
+      )}
+
+      {menuOpen && (
+        <div className="overlay" onClick={() => setMenuOpen(false)}>
+          <div className="sheet" onClick={e => e.stopPropagation()}>
+            <label className="field">
+              <span>{t.playerName}</span>
+              <input autoFocus value={player.name} onFocus={e => e.target.select()} onChange={e => renamePlayer(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && setMenuOpen(false)} />
+            </label>
+            <div className="picker-actions">
+              {players.length > 1 && <button className="danger" onClick={removePlayer}>{t.remove}</button>}
+              <button className="primary" onClick={() => setMenuOpen(false)}>{t.done}</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {photoOpen && (

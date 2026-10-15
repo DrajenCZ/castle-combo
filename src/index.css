@@ -40,6 +40,7 @@ h1 { margin: 0; font-size: 1.5rem; }
 h2 { font-size: 1.1rem; margin: 0 0 8px; }
 .subtitle { margin: 0; color: var(--muted); font-size: 0.9rem; }
 .header-actions { display: flex; gap: 6px; }
+.header-actions button { white-space: nowrap; }
 
 button {
   border: 1px solid var(--border);
@@ -51,17 +52,27 @@ button {
 button.ghost { background: transparent; }
 button.small { padding: 4px 8px; font-size: 0.85rem; }
 
-.players, .tabs { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0; }
+.players, .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
 .tab { white-space: nowrap; }
 .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .tab b { margin-left: 4px; }
 .tab.add { color: var(--muted); }
 
-.board-head { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-.player-name {
-  flex: 1; border: none; border-bottom: 1px solid var(--border);
-  background: transparent; font-size: 1.15rem; font-weight: 600; padding: 4px 0;
+.tab-split { display: inline-flex; }
+.tab-split .tab:first-child { border-radius: 8px 0 0 8px; }
+.tab.menu { border-radius: 0 8px 8px 0; padding: 8px 10px; border-left-color: rgba(255, 255, 255, 0.4); font-weight: 700; }
+.photo-button { width: 100%; margin-bottom: 10px; padding: 10px; font-weight: 600; }
+
+.sheet {
+  width: 100%; max-width: 560px; background: var(--bg); border-radius: 14px 14px 0 0;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
 }
+.field { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.9rem; }
+.field input {
+  padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel);
+  font-size: 1.1rem; font-weight: 600; color: var(--text);
+}
+button.danger { color: #d93a3a; border-color: #d93a3a; background: transparent; }
 
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .cell {
