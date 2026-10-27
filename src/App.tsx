@@ -143,6 +143,7 @@ export default function App() {
         <Counter label={t.keys} value={player.board.keys} onChange={keys => updateBoard({ keys })} />
         <Counter label={t.coins} value={player.board.coins} onChange={coins => updateBoard({ coins })} />
       </section>
+      <p className="hint">{t.keysHint}<br />{t.coinsHint}</p>
 
       <section className="summary">
         <span>{t.keysRow}: {score.keys}</span>

@@ -180,3 +180,5 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
   position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%;
   background: #ef8a1c; color: #fff; font-weight: 700; display: grid; place-items: center;
 }
+
+.hint { margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.35; }
